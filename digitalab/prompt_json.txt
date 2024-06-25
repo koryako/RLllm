@@ -1,0 +1,22 @@
+以下是html代码：
+{}
+
+操作步骤
+{}
+
+请按照以上操作步骤生成json格式的数据,只生成这个步骤的数据，不要生成其他
+
+限制
+只输出这一步json 数据，不生成下一步json
+只生成json 本身
+
+如：
+输入事件
+{{"type":"input","css_Selector":"xxxxx","value":"xxxxx"}}
+点击事件
+{{"type":"click","css_Selector":"xxxxx"}}
+跳转事件
+{{"type":"jumper","url":"跳转的地址"}}
+等待事件,单位为秒
+{{"type":"wait","value":"xxx"}}
+

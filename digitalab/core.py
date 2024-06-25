@@ -1,19 +1,20 @@
 import requests
 import json
 import os
-
+import queue
 
 current_dir = os.path.dirname(os.path.abspath(__file__))    
-URL_API="http://192.168.0.100:7001"
+URL_API="http://127.0.0.1:7001"
 class digitalab():
     def __init__(self,client):
         self.client=client
+        self.task_queue = queue.Queue()
 
     def open_api(self,messages,tools=""):
         model_name = self.client.models.list().data[0].id
         if tools:
             response = self.client.chat.completions.create(
-                model=model_name,#"gtp-35-turbo",
+                model="gtp-35-turbo",
                 messages=messages,
                 tools=tools,
                 tool_choice="auto",  # auto is default, but we'll be explicit
@@ -23,7 +24,7 @@ class digitalab():
             return response_message
         else:
             response = self.client.chat.completions.create(
-                model=model_name,#"gtp-35-turbo",
+                model="gtp-35-turbo",
                 messages=messages
             )
             response_message = response.choices[0].message
@@ -81,7 +82,7 @@ class digitalab():
 
 
     def action_api(self,payload=[]):
-        print(payload)
+        
         headers = {"Content-Type": "application/json"}
         url=URL_API+"/rpa/action?codeType=js"
         res = requests.post(url, data=json.dumps(payload),headers=headers)

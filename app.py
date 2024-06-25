@@ -2,81 +2,116 @@
 
 import os
 import gradio as gr
-
 from threading import Thread
 import random
 import time
-def parse_text(text):
-    lines = text.split("\n")
-    lines = [line for line in lines if line != ""]
-    count = 0
-    for i, line in enumerate(lines):
-        if "```" in line:
-            count += 1
-            items = line.split('`')
-            if count % 2 == 1:
-                lines[i] = f'<pre><code class="language-{items[-1]}">'
-            else:
-                lines[i] = f'<br></code></pre>'
-        else:
-            if i > 0:
-                if count % 2 == 1:
-                    line = line.replace("`", "\`")
-                    line = line.replace("<", "&lt;")
-                    line = line.replace(">", "&gt;")
-                    line = line.replace(" ", "&nbsp;")
-                    line = line.replace("*", "&ast;")
-                    line = line.replace("_", "&lowbar;")
-                    line = line.replace("-", "&#45;")
-                    line = line.replace(".", "&#46;")
-                    line = line.replace("!", "&#33;")
-                    line = line.replace("(", "&#40;")
-                    line = line.replace(")", "&#41;")
-                    line = line.replace("$", "&#36;")
-                lines[i] = "<br>" + line
-    text = "".join(lines)
-    return text
+import queue
+import os
+import json
+from digitalab.core import digitalab
+import pandas as pd
+import re
+import numpy as np
+import queue
+import threading
 
 
-def predict(history, max_length, top_p, temperature):
+from openai import OpenAI
+client = OpenAI(
+    api_key='YOUR_API_KEY',
+    base_url="http://0.0.0.0:23333/v1"
+)
+
+response_queue = queue.Queue()
+exit_event = threading.Event()
+webrobot=digitalab(client)
+
+def choose_action_strategy(agentid,state):
+    #print(agentid)
     
-    # streamer = TextIteratorStreamer(tokenizer, timeout=60, skip_prompt=True, skip_special_tokens=True)
-    # generate_kwargs = {
-    #     "input_ids": model_inputs,
-    #     "streamer": streamer,
-    #     "max_new_tokens": max_length,
-    #     "do_sample": True,
-    #     "top_p": top_p,
-    #     "temperature": temperature,
-    #     "stopping_criteria": StoppingCriteriaList([stop]),
-    #     "repetition_penalty": 1.2,
-    # }
-    # t = Thread(target=model.generate, kwargs=generate_kwargs)
-    # t.start()
-    
-    bot_message = random.choice(["你好吗？", "我爱你", "我很饿"])
-    history[-1][1] = ""
-    for character in bot_message:
-        history[-1][1] += character
-        time.sleep(0.05)
-        yield history
+    current_action,current_task=webrobot.act(state)
+    return current_action,current_task
 
-    # for new_token in streamer:
-    #     if new_token != '':
-    #         history[-1][1] += new_token
-    #         yield history
+class Agent:
+    def __init__(self, agent_id):
+        self.agent_id = agent_id
+        # 初始化环境状态
+        self.state = self.reset()
+        
+    def reset(self):
+        # 重置环境状态
+        #读取知识库任务步骤,返回环境的初始状态
+        state={"historys":["开始"],"html":"","alltasks":webrobot.get_tasks()}
+        return state
+
+    def step(self, action,task):
+        # 执行动作，改变环境状态
+        # 这应该返回新的状态、奖励和是否完成的标志
+        # 例如：return new_state, reward, done
+        done = False
+        if action["type"]=="finish":
+            done=True
+            return self.state, "", done
+            #调用工具
+        elif  action['type']=="tool":
+            call_response,_=webrobot.call_function(task)
+            self.state['historys'].append(task)
+            return self.state, "", done
+        #动作响应
+        response=webrobot.action_api(action)
+        
+        print(response)
+        #更新html
+        self.state["html"]=webrobot.parserhtml()
+        self.state['historys'].append(task)
+        return self.state, "", done
+
+class MultiAgentEnv:
+    def __init__(self, num_agents):
+        self.agent =Agent(num_agents)
+        self.num_agents = num_agents
+        self.processes = []
+        
+
+    def reset(self):
+        for agent in self.agents:
+            agent.reset()
+
+    def step(self):
+        done = False
+        
+        while not done:
+            action ,task= choose_action_strategy(self.agent.agent_id, self.agent.state)
+            print(action)
+            response_queue.put(f"{action}")
+            
+            new_state, reward, done = self.agent.step(action,task)
+            self.agent.state = new_state
+        exit_event.set()
+        return done,self.agent.state
 
 
-def chat_response(message, history):
-    # 这里可以添加你的聊天机器人逻辑
-    responses = ["回复1", "回复2", "回复3"]  # 示例回复列表
-    
-    for response in responses:
+def bot_thread_func():
+    env = MultiAgentEnv(num_agents=1)
+    done,state = env.step()
+
+bot_thread = Thread(target=bot_thread_func)
+
+
+def user_thread_func(message, history):
+    bot_thread.start()
+    done=False
+    while not exit_event.is_set():
+        
+        response = response_queue.get()
+        print("响应")
+        print(response)
         yield "", response
+            
 
 def bot(history,max_length, top_p, temperature):
         user_message = history[-1][0]
-        for i, response in enumerate(chat_response(user_message, history)):
+        for i, response in enumerate(user_thread_func(user_message, history)):
             if i == 0:
                 history[-1][1] = response[1]
             else:
@@ -101,7 +136,7 @@ with gr.Blocks() as demo:
 
 
     def user(query, history):
-        return "", history + [[parse_text(query), ""]]
+        return "", history + [[query, ""]]
 
 
     submitBtn.click(user, [user_input, chatbot], [user_input, chatbot], queue=False).then(
