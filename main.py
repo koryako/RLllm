@@ -1,25 +1,21 @@
 import os
 import json
-from util import action_api,plan,parserhtml,htmltojson,get_tasks,json2Action
+from digitalab.core import digitalab
 import pandas as pd
 import re
 import numpy as np
+from openai import OpenAI
+client = OpenAI(
+    api_key='YOUR_API_KEY',
+    base_url="http://0.0.0.0:23333/v1"
+)
+
+
+webrobot=digitalab(client)
 
 def choose_action_strategy(agentid,state):
     #print(agentid)
-    #大模型根据全量步骤和历史步骤输出当前任务
-    current_task=plan(state['alltasks'],[""] if len(state['historys'])<1 else [state['historys'][-1]])
-    print(current_task)
-    if "任务已经完成" in current_task:
-        return {"type":"finish"},current_task
-    #获取格式化后的html 
-    html=parserhtml()
-    print(html)
-    #大模型根据html和当前任务生成动作json
-    jsonstring=htmltojson(html,current_task)
-    print(jsonstring)
-    #json转action
-    current_action=json2Action(jsonstring)
+    current_action,current_task=webrobot.act(state)
     return current_action,current_task
 
 class Agent:
@@ -31,7 +27,7 @@ class Agent:
     def reset(self):
         # 重置环境状态
         #读取知识库任务步骤,返回环境的初始状态
-        state={"historys":["开始"],"html":"","alltasks":get_tasks()}
+        state={"historys":["开始"],"html":"","alltasks":webrobot.get_tasks()}
         return state
 
     def step(self, action,task):
@@ -41,12 +37,17 @@ class Agent:
         done = False
         if action["type"]=="finish":
             done=True
-            return self.state, "", done    
+            return self.state, "", done
+            #调用工具
+        elif  action['type']=="tool":
+            call_response,_=webrobot.call_function(task)
+            self.state['historys'].append(task)
+            return self.state, "", done
         #动作响应
-        response=action_api(action)
+        response=webrobot.action_api(action)
         print(response)
         #更新html
-        self.state["html"]=parserhtml()
+        self.state["html"]=webrobot.parserhtml()
         self.state['historys'].append(task)
         return self.state, "", done
 
@@ -72,10 +73,13 @@ class MultiAgentEnv:
 
   
 if __name__ == '__main__':
+    
    
     env = MultiAgentEnv(num_agents=1)
     done = False
     while not done:
         done = env.step()
+
+ 
    
  
