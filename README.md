@@ -83,7 +83,7 @@ lmdeploy serve api_server 你的模型目录地址/internlm2-chat-7b --server-po
 @misc{2024AMchat,
     title={AMchat: A large language model integrating advanced math concepts, exercises, and solutions},
     author={AMchat Contributors},
-    howpublished = {\url{https://github.com/AXYZdong/AMchat}},
+    howpublished = {\url{https://github.com/koryako/RLllm}},
     year={2024}
 }
 ```
