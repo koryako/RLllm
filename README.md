@@ -1,10 +1,6 @@
 # Web+AI策略自动化
 
-<div>
-
-<img src="./image/1.png" width="200" />
-
-</div>
+![image](https://raw.githubusercontent.com/koryako/RLllm/main/image/2.png)
 
 ## 📝目录
 
@@ -53,6 +49,7 @@ python main.py
 python app.py
 ```
 
+[观看Demo视频](https://www.bilibili.com/video/BV1Tt3qezEdh/?spm_id_from=333.999.0.0)
 
 
 #### LMDeploy启动模型
