@@ -16,7 +16,6 @@
     - [快速开始](#快速开始)
       - [LMDeploy启动模型](#lmdeploy启动模型)
   - [🖊️ Citation](#️-citation)
-  - [开源许可证](#开源许可证)
 
 ## 📖 简介
 
@@ -81,13 +80,11 @@ lmdeploy serve api_server 你的模型目录地址/internlm2-chat-7b --server-po
 
 ```bibtex
 @misc{2024AMchat,
-    title={AMchat: A large language model integrating advanced math concepts, exercises, and solutions},
-    author={AMchat Contributors},
+    title={An LLM Model Utilizing a Reinforcement Learning Framework},
+    author={Jay},
     howpublished = {\url{https://github.com/koryako/RLllm}},
     year={2024}
 }
 ```
 
-## 开源许可证
 
-该项目采用 [Apache License 2.0 开源许可证](https://github.com/AXYZdong/AMchat/blob/main/LICENSE) 同时，请遵守所使用的模型与数据集的许可证。
