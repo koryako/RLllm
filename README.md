@@ -79,7 +79,7 @@ lmdeploy serve api_server 你的模型目录地址/internlm2-chat-7b --server-po
 ## 🖊️ Citation
 
 ```bibtex
-@misc{2024AMchat,
+@misc{2024,
     title={An LLM Model Utilizing a Reinforcement Learning Framework},
     author={Jay},
     howpublished = {\url{https://github.com/koryako/RLllm}},
