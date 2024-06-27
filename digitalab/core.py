@@ -14,7 +14,7 @@ class digitalab():
         model_name = self.client.models.list().data[0].id
         if tools:
             response = self.client.chat.completions.create(
-                model="gtp-35-turbo",
+                model=model_name,
                 messages=messages,
                 tools=tools,
                 tool_choice="auto",  # auto is default, but we'll be explicit
@@ -24,7 +24,7 @@ class digitalab():
             return response_message
         else:
             response = self.client.chat.completions.create(
-                model="gtp-35-turbo",
+                model=model_name,
                 messages=messages
             )
             response_message = response.choices[0].message
