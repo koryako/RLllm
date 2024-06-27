@@ -39,7 +39,7 @@ class digitalab():
         print(tool_calls)
         if tool_calls:
         # if  isinstance(res['response'], dict):
-            return run_task(response_message, messages)
+            return self.run_task(response_message, messages)
         return response_message , ""
 
 
