@@ -72,7 +72,14 @@ lmdeploy serve api_server 你的模型目录地址/internlm2-chat-7b --server-po
      base_url="http://0.0.0.0:23333/v1"
  )
 ```
+<details>
+<summary> 应用场景 </summary>
 
+![image](https://raw.githubusercontent.com/koryako/RLllm/main/image/3.png)
+
+![image](https://raw.githubusercontent.com/koryako/RLllm/main/image/4.png)
+
+</details>
 ## 🖊️ Citation
 
 ```bibtex
