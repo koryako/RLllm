@@ -17,9 +17,13 @@
 
 使用大语言模型通过AI agent 执行web自动化任务，比如测试用例自动化测试帮助减轻测试人员的工作。往往缺乏的先验知识，导致语言模型生成任务轨迹不稳定，且无法评价生成轨迹的有效性。我们用加入轨迹知识库，稳定模型的输出。另外未来还将通过RL模型学习专家模型在不同任务执行后发生的状态改变,不断优化策略轨迹。
 
+![image](https://raw.githubusercontent.com/koryako/RLllm/main/image/5.png)
+
 如果你觉得这个项目对你有帮助，欢迎 ⭐ Star，让更多的人发现它！
 
-![image](https://raw.githubusercontent.com/koryako/RLllm/main/image/1.jpg)
+
+
+
 
 
 ## 🚀 News
@@ -75,7 +79,15 @@ lmdeploy serve api_server 你的模型目录地址/internlm2-chat-7b --server-po
 <details>
 <summary> 应用场景 </summary>
 
+数据采集与分析
+
+![image](https://raw.githubusercontent.com/koryako/RLllm/main/image/1.jpg)
+
+测试用例
+
 ![image](https://raw.githubusercontent.com/koryako/RLllm/main/image/3.png)
+
+AI客服
 
 ![image](https://raw.githubusercontent.com/koryako/RLllm/main/image/4.png)
 
