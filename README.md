@@ -76,6 +76,8 @@
 
 ## 🚀 News
 
+\[2024.07.08] 该项目进入2024 世界人工智能大会(WAIC2024)-智浦大模型挑战赛50强。[媒体报道](https://mp.weixin.qq.com/s/hUcOwavLyzMThLgf4z1Y1g)
+
 \[2024.06.26] 完善了README，技术路线。
 
 \[2024.06.24] 上传代码仓库，优化代码依赖结构。
@@ -138,6 +140,13 @@ lmdeploy serve api_server 你的模型目录地址/internlm2-chat-7b --server-po
 AI客服
 
 ![image](https://raw.githubusercontent.com/koryako/RLllm/main/image/4.png)
+
+</details>
+
+<details>
+<summary> 智浦大模型挑战赛（夏季）50强 </summary>
+
+![image](https://raw.githubusercontent.com/koryako/RLllm/main/image/10.png)
 
 </details>
 ## 🖊️ Citation
